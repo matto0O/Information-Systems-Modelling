@@ -1,0 +1,1281 @@
+openapi: 3.0.3
+info:
+  title: Web Volunteer Coordination System - OpenAPI 3.0
+  description: |-
+    This is a Web Volunteer Coordination System based on the OpenAPI 3.0 specification. 
+  contact:
+    email: 260292@student.pwr.edu.pl
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: localhost:8080/
+tags:
+  - name: event
+    description: Information regarding events
+  - name: volunteer
+    description: Volunteer actions
+  - name: organizer
+    description: Organizer actions
+  - name: user
+    description: User actions
+  - name: task
+    description: Operations on tasks
+  - name: eventtag
+    description: Event tag browsing
+  - name: skill
+    description: Skill management
+  - name: crew
+    description: Crew management
+paths:
+  /event:
+    put:
+      tags:
+        - event
+      summary: Update an existing event
+      description: Update an existing event by Id
+      operationId: updateEvent
+      requestBody:
+        description: Update an existent event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventWithoutTags'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventWithoutTags'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EventWithoutTags'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: event not found
+        '422':
+          description: Validation exception
+    post:
+      tags:
+        - event
+      summary: Add a new event
+      description: Add a new event
+      operationId: addEvent
+      requestBody:
+        description: Create a new event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - event
+      summary: Finds all events
+      description: Lists all events
+      operationId: findAllEvents
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /event/findInTimeframe:
+    get:
+      tags:
+        - event
+      summary: Finds events in given timeframe
+      description: Lists all events between two passed dates
+      operationId: findInTimeframe
+      parameters:
+        - name: before
+          in: query
+          description: Earliest inclusive date of event start
+          schema:
+            type: string
+            format: date-time
+        - name: after
+          in: query
+          description: Latest inclusive date of event start
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /event/findByEventTags:
+    get:
+      tags:
+        - event
+      summary: Finds events by event tags
+      description: Multiple tags can be provided with comma separated strings.
+      operationId: findEventsByEventTags
+      parameters:
+        - name: tagIds
+          in: query
+          description: Tags to filter by
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid tag
+        '500':
+          description: Internal server error
+
+  /event/{eventId}:
+    get:
+      tags:
+        - event
+      summary: Get detailed event information
+      description: Returns a single detailed event
+      operationId: getEventById
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of event to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: Event not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - event
+      summary: Deletes an event
+      description: Deletes an event
+      operationId: deleteEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: event id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '404':
+          description: Event not found
+        '500':
+          description: Internal server error
+#  /event/{eventId}/uploadImage:
+#    post:
+#      tags:
+#        - event
+#      summary: uploads an image
+#      description: ''
+#      operationId: uploadFile
+#      parameters:
+#        - name: eventId
+#          in: path
+#          description: ID of event to update
+#          required: true
+#          schema:
+#            type: integer
+#            format: int64
+#      requestBody:
+#        content:
+#          image/png:
+#            schema:
+#              type: string
+#              format: binary
+#      responses:
+#        '200':
+#          description: successful operation
+#        '400':
+#          description: Invalid input
+#        '404':
+#          description: Event not found
+#        '500':
+#          description: Internal server error
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/{id}:
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of user that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: email
+          in: query
+          description: The email for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+
+  /tasks:
+    get:
+      tags:
+        - task
+      summary: Retrieve all tasks
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+    post:
+      tags:
+        - task
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}:
+    get:
+      tags:
+        - task
+      summary: Retrieve detailed task info
+      operationId: getTaskSkills
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to list
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskWithSkills'
+    put:
+      tags:
+        - task
+      summary: Update a task
+      operationId: updateTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+    delete:
+      tags:
+        - task
+      summary: Delete a task
+      operationId: deleteTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Task deleted successfully
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+  /volunteer:
+    get:
+      tags:
+        - volunteer
+      summary: Retrieve all volunteers
+      operationId: getAllVolunteers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Volunteer'
+
+    post:
+      tags:
+        - volunteer
+      summary: Create a new volunteer
+      operationId: createVolunteer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Volunteer'
+      responses:
+        '201':
+          description: Volunteer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volunteer'
+
+  /volunteer/{volunteerId}:
+    get:
+      tags:
+        - volunteer
+      summary: Retrieve detailed volunteer info by ID
+      operationId: getVolunteerById
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of the volunteer to retrieve info about
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolunteerWithUser'
+
+    put:
+      tags:
+        - volunteer
+      summary: Update a volunteer
+      operationId: updateVolunteer
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of the volunteer to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Volunteer'
+      responses:
+        '200':
+          description: Volunteer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volunteer'
+
+    delete:
+      tags:
+        - volunteer
+      summary: Delete a volunteer
+      operationId: deleteVolunteer
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of the volunteer to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Volunteer deleted successfully
+        '404':
+          description: Volunteer not found
+        '500':
+          description: Internal server error
+
+  /organizer:
+    get:
+      tags:
+        - organizer
+      summary: Retrieve all organizers
+      operationId: getAllOrganizers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organizer'
+
+    post:
+      tags:
+        - organizer
+      summary: Create a new organizer
+      operationId: createOrganizer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organizer'
+      responses:
+        '201':
+          description: Organizer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizer'
+
+  /organizer/{organizerId}:
+    get:
+      tags:
+        - organizer
+      summary: Retrieve detailed organizer info by ID
+      operationId: getOrganizerById
+      parameters:
+        - name: organizerId
+          in: path
+          required: true
+          description: ID of the organizer to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerWithUser'
+
+    put:
+      tags:
+        - organizer
+      summary: Update an organizer
+      operationId: updateOrganizer
+      parameters:
+        - name: organizerId
+          in: path
+          required: true
+          description: ID of the organizer to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organizer'
+      responses:
+        '200':
+          description: Organizer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizer'
+
+    delete:
+      tags:
+        - organizer
+      summary: Delete an organizer
+      operationId: deleteOrganizer
+      parameters:
+        - name: organizerId
+          in: path
+          required: true
+          description: ID of the organizer to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Organizer deleted successfully
+        '404':
+          description: Organizer not found
+        '500':
+          description: Internal server error
+
+  /skill:
+    get:
+      tags:
+        - skill
+      summary: Retrieve all skills
+      operationId: getAllSkills
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+
+    post:
+      tags:
+        - skill
+      summary: Create a new skill
+      operationId: createSkill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Skill'
+      responses:
+        '201':
+          description: Skill created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          description: Skill already exists
+
+  /skill/{skillId}:
+    delete:
+      tags:
+        - skill
+      summary: Delete a skill
+      operationId: deleteSkill
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          description: ID of the skill to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Skill deleted successfully
+        '404':
+          description: Skill not found
+        '500':
+          description: Internal server error
+
+  /eventtag:
+    get:
+      tags:
+        - eventtag
+      summary: Retrieve all event tags
+      operationId: getAllEventTags
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventTag'
+
+    post:
+      tags:
+        - eventtag
+      summary: Create a new event tag
+      operationId: createEventTag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTag'
+      responses:
+        '201':
+          description: Event tag created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTag'
+        '400':
+          description: Event tag already exists
+        '500':
+          description: Internal server error
+
+  /eventtag/{eventTagId}:
+    delete:
+      tags:
+        - eventtag
+      summary: Delete an event tag
+      operationId: deleteEventTag
+      parameters:
+        - name: eventTagId
+          in: path
+          required: true
+          description: ID of the event tag to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Event tag deleted successfully
+        '404':
+          description: Event tag not found
+        '500':
+          description: Internal server error
+
+  /crew:
+    get:
+      tags:
+        - crew
+      summary: Retrieve all crew member connections
+      operationId: getAllCrews
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Crew'
+
+  /crew/{volunteerId}/{eventId}:
+    post:
+      tags:
+        - crew
+      summary: Join an event crew
+      operationId: joinEventCrew
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of the volunteer joining the crew
+          schema:
+            type: integer
+        - name: eventId
+          in: path
+          required: true
+          description: ID of the event for which the volunteer is joining the crew
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Volunteer successfully joined the event crew
+        '400':
+          description: Bad request
+
+    put:
+      tags:
+        - crew
+      summary: Update crew status
+      operationId: updateCrewStatus
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of volunteer to update their status
+          schema:
+            type: integer
+        - name: eventId
+          in: path
+          required: true
+          description: ID of event to update
+          schema:
+            type: integer
+        - name: status
+          in: query
+          required: true
+          description: New status of the crew
+          schema:
+            type: string
+            enum: [busy, gone, available]
+      responses:
+        '200':
+          description: Crew status updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Crew member not found
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - crew
+      summary: Generate a certificate
+      operationId: getCrewCertificate
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of volunteer to generate certificate
+          schema:
+            type: integer
+        - name: eventId
+          in: path
+          required: true
+          description: ID of event to retrieve data from
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewWithCertificate'
+        '404':
+          description: Crew member not found
+
+    delete:
+      tags:
+        - crew
+      summary: Delete a crew member
+      operationId: deleteCrew
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of volunteer to delete from crew
+          schema:
+            type: integer
+        - name: eventId
+          in: path
+          required: true
+          description: ID of event to remove from
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Crew deleted successfully
+        '404':
+          description: Crew member not found
+
+  /crew/event/{eventId}:
+    get:
+      tags:
+        - crew
+      summary: Get all crew members for a given eventId
+      operationId: getAllCrewsByEventId
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: ID of the event to retrieve crews for
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Crew'
+        '404':
+          description: Crew members not found
+        '500':
+          description: Internal server error
+
+  /crew/volunteer/{volunteerId}:
+    get:
+      tags:
+        - crew
+      summary: Get all crew memberships for a given volunteer
+      operationId: getAllCrewsByVolunteerId
+      parameters:
+        - name: volunteerId
+          in: path
+          required: true
+          description: ID of the volunteer to retrieve crews for
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Crew'
+        '404':
+          description: Crew members not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Event:
+      required:
+        - name
+        - date
+        - organizerId
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: Juwenalia 2024
+        date:
+          type: string
+          format: date-time
+          example: 2024-05-01T12:00:00Z
+        organizerId:
+          type: integer
+          format: int64
+          example: 10
+        eventTags:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/EventTag'
+        mapPath:
+          type: string
+          example: Juwenalia_map.png
+          description: event location map image path
+      xml:
+        name: event
+
+    EventWithoutTags:
+      required:
+        - name
+        - date
+        - organizerId
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: Juwenalia 2024
+        date:
+          type: string
+          format: date-time
+          example: 2024-05-01T12:00:00Z
+        organizerId:
+          type: integer
+          format: int64
+          example: 198772
+        mapPath:
+          type: string
+          example: Juwenalia_map.png
+          description: event location map image path
+      xml:
+        name: eventwithouttags
+
+    Task:
+      type: object
+      required:
+        - status
+        - name
+        - eventId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+        eventId:
+          type: integer
+          format: int64
+          example: 198772
+        assigneeId:
+          type: integer
+          format: int64
+          example: 198772
+        deadline:
+          type: string
+          format: date-time
+        xLocation:
+          type: number
+        yLocation:
+          type: number
+        description:
+          type: string
+        status:
+          type: string
+          description: Task Status
+          example: to do
+          enum:
+            - to do
+            - in progress
+            - done
+      xml:
+        name: task
+
+    TaskWithSkills:
+      type: object
+      required:
+        - status
+        - name
+        - eventId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+        eventId:
+          type: integer
+          format: int64
+          example: 198772
+        assigneeId:
+          type: integer
+          format: int64
+          example: 198772
+        deadline:
+          type: string
+          format: date-time
+        xLocation:
+          type: number
+        yLocation:
+          type: number
+        description:
+          type: string
+        status:
+          type: string
+          description: Task Status
+          example: to do
+          enum:
+            - to do
+            - in progress
+            - done
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+      xml:
+        name: taskWithSkills
+
+    Volunteer:
+      type: object
+      required:
+        - name
+        - surname
+        - username
+        - userId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 102856
+        name:
+          type: string
+          example: John
+        surname:
+          type: string
+          example: Doe
+        username:
+          type: string
+          example: joey
+        userId:
+          type: integer
+          format: int64
+          example: 100320
+      xml:
+        name: volunteer
+
+    Organizer:
+      type: object
+      required:
+        - brandName
+        - userId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        brandName:
+          type: string
+          example: BigCompany
+        userId:
+          type: integer
+          format: int64
+          example: 100000
+      xml:
+        name: organizer
+
+    OrganizerWithUser:
+      type: object
+      required:
+        - brandName
+        - userId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        brandName:
+          type: string
+          example: BigCompany
+        user:
+          $ref: '#/components/schemas/User'
+      xml:
+        name: organizerWithUser
+
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - phoneNumber
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phoneNumber:
+          type: string
+          example: '12345'
+      xml:
+        name: user
+
+    EventTag:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Concert
+      xml:
+        name: eventtag
+
+    Skill:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Ticketing
+      xml:
+        name: skill
+
+    Crew:
+      type: object
+      properties:
+        volunteer:
+          $ref: '#/components/schemas/Volunteer'
+        eventId:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [busy, gone, available]
+      xml:
+        name: crew
+
+    CrewWithCertificate:
+      type: object
+      properties:
+        volunteer:
+          $ref: '#/components/schemas/Volunteer'
+        eventId:
+          type: integer
+          format: int64
+        certificatePath:
+          type: string
+          example: joey_Juwenalia 2024.pdf
+      xml:
+        name: crewWithCertificate
+
+    VolunteerWithUser:
+      type: object
+      properties:
+        volunteer:
+          $ref: '#/components/schemas/Volunteer'
+        user:
+          $ref: '#/components/schemas/User'
+
+
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
