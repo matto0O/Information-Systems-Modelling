@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Web Volunteer Coordination System - OpenAPI 3.0
+  title: Web VolunteerDTO Coordination System - OpenAPI 3.0
   description: |-
     This is a Web Volunteer Coordination System based on the OpenAPI 3.0 specification. 
   contact:
@@ -15,50 +15,21 @@ tags:
   - name: event
     description: Information regarding events
   - name: volunteer
-    description: Volunteer actions
+    description: VolunteerDTO actions
   - name: organizer
-    description: Organizer actions
+    description: OrganizerDTO actions
   - name: user
-    description: User actions
+    description: UserDTO actions
   - name: task
     description: Operations on tasks
   - name: eventtag
-    description: Event tag browsing
+    description: EventDTO tag browsing
   - name: skill
-    description: Skill management
+    description: SkillDTO management
   - name: crew
-    description: Crew management
+    description: CrewDTO management
 paths:
   /event:
-    put:
-      tags:
-        - event
-      summary: Update an existing event
-      description: Update an existing event by Id
-      operationId: updateEvent
-      requestBody:
-        description: Update an existent event
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventWithoutTags'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventWithoutTags'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/EventWithoutTags'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: event not found
-        '422':
-          description: Validation exception
     post:
       tags:
         - event
@@ -70,7 +41,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Event'
+              $ref: '#/components/schemas/EventDTO'
         required: true
       responses:
         '200':
@@ -78,7 +49,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/EventDTO'
         '400':
           description: Invalid input
         '500':
@@ -97,12 +68,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventDTO'
         '400':
           description: Invalid input
         '500':
           description: Internal server error
-
   /event/findInTimeframe:
     get:
       tags:
@@ -131,7 +101,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventDTO'
         '400':
           description: Invalid input
         '500':
@@ -162,13 +132,51 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventDTO'
         '400':
           description: Invalid tag
         '500':
           description: Internal server error
 
   /event/{eventId}:
+
+    put:
+      tags:
+        - event
+      summary: Update an existing event
+      description: Update an existing event by Id
+      operationId: updateEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of event to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventWithoutTagsDTO'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventWithoutTagsDTO'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/EventWithoutTagsDTO'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: event not found
+        '422':
+          description: Validation exception
     get:
       tags:
         - event
@@ -189,9 +197,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/EventDTO'
         '404':
-          description: Event not found
+          description: EventDTO not found
         '500':
           description: Internal server error
     delete:
@@ -210,7 +218,7 @@ paths:
             format: int64
       responses:
         '404':
-          description: Event not found
+          description: EventDTO not found
         '500':
           description: Internal server error
 #  /event/{eventId}/uploadImage:
@@ -240,7 +248,7 @@ paths:
 #        '400':
 #          description: Invalid input
 #        '404':
-#          description: Event not found
+#          description: EventDTO not found
 #        '500':
 #          description: Internal server error
   /user:
@@ -254,14 +262,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserDTO'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserDTO'
   /user/{id}:
     put:
       tags:
@@ -281,17 +289,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserDTO'
           application/xml:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserDTO'
       responses:
         '200':
           description: Successful operation
         '400':
           description: Invalid input
         '404':
-          description: User not found
+          description: UserDTO not found
         '500':
           description: Internal server error
     delete:
@@ -312,7 +320,7 @@ paths:
         '400':
           description: Invalid input
         '404':
-          description: User not found
+          description: UserDTO not found
         '500':
           description: Internal server error
   /user/login:
@@ -368,7 +376,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task'
+                  $ref: '#/components/schemas/TaskDTO'
 
     post:
       tags:
@@ -380,14 +388,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/TaskDTO'
       responses:
         '201':
-          description: Task created successfully
+          description: TaskDTO created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/TaskDTO'
 
   /tasks/{taskId}:
     get:
@@ -410,7 +418,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TaskWithSkills'
+                  $ref: '#/components/schemas/TaskWithSkillsDTO'
     put:
       tags:
         - task
@@ -428,14 +436,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/TaskDTO'
       responses:
         '200':
-          description: Task updated successfully
+          description: TaskDTO updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/TaskDTO'
 
     delete:
       tags:
@@ -451,9 +459,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Task deleted successfully
+          description: TaskDTO deleted successfully
         '404':
-          description: Task not found
+          description: TaskDTO not found
         '500':
           description: Internal server error
 
@@ -471,7 +479,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Volunteer'
+                  $ref: '#/components/schemas/VolunteerDTO'
 
     post:
       tags:
@@ -483,14 +491,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Volunteer'
+              $ref: '#/components/schemas/VolunteerDTO'
       responses:
         '201':
-          description: Volunteer created successfully
+          description: VolunteerDTO created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Volunteer'
+                $ref: '#/components/schemas/VolunteerDTO'
 
   /volunteer/{volunteerId}:
     get:
@@ -511,7 +519,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VolunteerWithUser'
+                $ref: '#/components/schemas/VolunteerWithUserDTO'
 
     put:
       tags:
@@ -530,14 +538,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Volunteer'
+              $ref: '#/components/schemas/VolunteerDTO'
       responses:
         '200':
-          description: Volunteer updated successfully
+          description: VolunteerDTO updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Volunteer'
+                $ref: '#/components/schemas/VolunteerDTO'
 
     delete:
       tags:
@@ -553,9 +561,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Volunteer deleted successfully
+          description: VolunteerDTO deleted successfully
         '404':
-          description: Volunteer not found
+          description: VolunteerDTO not found
         '500':
           description: Internal server error
 
@@ -573,7 +581,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organizer'
+                  $ref: '#/components/schemas/OrganizerDTO'
 
     post:
       tags:
@@ -585,14 +593,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organizer'
+              $ref: '#/components/schemas/OrganizerDTO'
       responses:
         '201':
-          description: Organizer created successfully
+          description: OrganizerDTO created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizer'
+                $ref: '#/components/schemas/OrganizerDTO'
 
   /organizer/{organizerId}:
     get:
@@ -613,7 +621,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizerWithUser'
+                $ref: '#/components/schemas/OrganizerWithUserDTO'
 
     put:
       tags:
@@ -632,14 +640,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organizer'
+              $ref: '#/components/schemas/OrganizerDTO'
       responses:
         '200':
-          description: Organizer updated successfully
+          description: OrganizerDTO updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizer'
+                $ref: '#/components/schemas/OrganizerDTO'
 
     delete:
       tags:
@@ -655,9 +663,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Organizer deleted successfully
+          description: OrganizerDTO deleted successfully
         '404':
-          description: Organizer not found
+          description: OrganizerDTO not found
         '500':
           description: Internal server error
 
@@ -675,7 +683,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Skill'
+                  $ref: '#/components/schemas/SkillDTO'
 
     post:
       tags:
@@ -687,16 +695,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Skill'
+              $ref: '#/components/schemas/SkillDTO'
       responses:
         '201':
-          description: Skill created successfully
+          description: SkillDTO created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Skill'
+                $ref: '#/components/schemas/SkillDTO'
         '400':
-          description: Skill already exists
+          description: SkillDTO already exists
 
   /skill/{skillId}:
     delete:
@@ -713,9 +721,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Skill deleted successfully
+          description: SkillDTO deleted successfully
         '404':
-          description: Skill not found
+          description: SkillDTO not found
         '500':
           description: Internal server error
 
@@ -733,7 +741,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EventTag'
+                  $ref: '#/components/schemas/EventTagDTO'
 
     post:
       tags:
@@ -745,16 +753,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EventTag'
+              $ref: '#/components/schemas/EventTagDTO'
       responses:
         '201':
-          description: Event tag created successfully
+          description: EventDTO tag created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventTag'
+                $ref: '#/components/schemas/EventTagDTO'
         '400':
-          description: Event tag already exists
+          description: EventDTO tag already exists
         '500':
           description: Internal server error
 
@@ -773,9 +781,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Event tag deleted successfully
+          description: EventDTO tag deleted successfully
         '404':
-          description: Event tag not found
+          description: EventDTO tag not found
         '500':
           description: Internal server error
 
@@ -793,7 +801,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Crew'
+                  $ref: '#/components/schemas/CrewDTO'
 
   /crew/{volunteerId}/{eventId}:
     post:
@@ -816,7 +824,7 @@ paths:
             type: integer
       responses:
         '201':
-          description: Volunteer successfully joined the event crew
+          description: VolunteerDTO successfully joined the event crew
         '400':
           description: Bad request
 
@@ -847,11 +855,11 @@ paths:
             enum: [busy, gone, available]
       responses:
         '200':
-          description: Crew status updated successfully
+          description: CrewDTO status updated successfully
         '400':
           description: Invalid input
         '404':
-          description: Crew member not found
+          description: CrewDTO member not found
         '500':
           description: Internal server error
     get:
@@ -878,9 +886,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CrewWithCertificate'
+                $ref: '#/components/schemas/CrewWithCertificateDTO'
         '404':
-          description: Crew member not found
+          description: CrewDTO member not found
 
     delete:
       tags:
@@ -902,9 +910,9 @@ paths:
             type: integer
       responses:
         '204':
-          description: Crew deleted successfully
+          description: CrewDTO deleted successfully
         '404':
-          description: Crew member not found
+          description: CrewDTO member not found
 
   /crew/event/{eventId}:
     get:
@@ -927,9 +935,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Crew'
+                  $ref: '#/components/schemas/CrewDTO'
         '404':
-          description: Crew members not found
+          description: CrewDTO members not found
         '500':
           description: Internal server error
 
@@ -954,15 +962,15 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Crew'
+                  $ref: '#/components/schemas/CrewDTO'
         '404':
-          description: Crew members not found
+          description: CrewDTO members not found
         '500':
           description: Internal server error
 
 components:
   schemas:
-    Event:
+    EventDTO:
       required:
         - name
         - date
@@ -989,7 +997,7 @@ components:
           xml:
             wrapped: true
           items:
-            $ref: '#/components/schemas/EventTag'
+            $ref: '#/components/schemas/EventTagDTO'
         mapPath:
           type: string
           example: Juwenalia_map.png
@@ -997,7 +1005,7 @@ components:
       xml:
         name: event
 
-    EventWithoutTags:
+    EventWithoutTagsDTO:
       required:
         - name
         - date
@@ -1026,7 +1034,7 @@ components:
       xml:
         name: eventwithouttags
 
-    Task:
+    TaskDTO:
       type: object
       required:
         - status
@@ -1058,7 +1066,7 @@ components:
           type: string
         status:
           type: string
-          description: Task Status
+          description: TaskDTO CrewStatus
           example: to do
           enum:
             - to do
@@ -1067,7 +1075,7 @@ components:
       xml:
         name: task
 
-    TaskWithSkills:
+    TaskWithSkillsDTO:
       type: object
       required:
         - status
@@ -1099,7 +1107,7 @@ components:
           type: string
         status:
           type: string
-          description: Task Status
+          description: TaskDTO CrewStatus
           example: to do
           enum:
             - to do
@@ -1108,11 +1116,11 @@ components:
         skills:
           type: array
           items:
-            $ref: '#/components/schemas/Skill'
+            $ref: '#/components/schemas/SkillDTO'
       xml:
         name: taskWithSkills
 
-    Volunteer:
+    VolunteerDTO:
       type: object
       required:
         - name
@@ -1140,7 +1148,7 @@ components:
       xml:
         name: volunteer
 
-    Organizer:
+    OrganizerDTO:
       type: object
       required:
         - brandName
@@ -1160,7 +1168,7 @@ components:
       xml:
         name: organizer
 
-    OrganizerWithUser:
+    OrganizerWithUserDTO:
       type: object
       required:
         - brandName
@@ -1174,11 +1182,11 @@ components:
           type: string
           example: BigCompany
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserDTO'
       xml:
         name: organizerWithUser
 
-    User:
+    UserDTO:
       type: object
       required:
         - name
@@ -1202,7 +1210,7 @@ components:
       xml:
         name: user
 
-    EventTag:
+    EventTagDTO:
       type: object
       required:
         - name
@@ -1216,7 +1224,7 @@ components:
       xml:
         name: eventtag
 
-    Skill:
+    SkillDTO:
       type: object
       required:
         - name
@@ -1230,11 +1238,11 @@ components:
       xml:
         name: skill
 
-    Crew:
+    CrewDTO:
       type: object
       properties:
         volunteer:
-          $ref: '#/components/schemas/Volunteer'
+          $ref: '#/components/schemas/VolunteerDTO'
         eventId:
           type: integer
           format: int64
@@ -1244,11 +1252,11 @@ components:
       xml:
         name: crew
 
-    CrewWithCertificate:
+    CrewWithCertificateDTO:
       type: object
       properties:
         volunteer:
-          $ref: '#/components/schemas/Volunteer'
+          $ref: '#/components/schemas/VolunteerDTO'
         eventId:
           type: integer
           format: int64
@@ -1258,13 +1266,13 @@ components:
       xml:
         name: crewWithCertificate
 
-    VolunteerWithUser:
+    VolunteerWithUserDTO:
       type: object
       properties:
         volunteer:
-          $ref: '#/components/schemas/Volunteer'
+          $ref: '#/components/schemas/VolunteerDTO'
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserDTO'
 
 
     ApiResponse:

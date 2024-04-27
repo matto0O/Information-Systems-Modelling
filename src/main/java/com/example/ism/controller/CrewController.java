@@ -1,8 +1,8 @@
-package com.example.ism;
+package com.example.ism.controller;
 
 import com.example.api.CrewApi;
-import com.example.model.Crew;
-import com.example.model.CrewWithCertificate;
+import com.example.model.CrewDTO;
+import com.example.model.CrewWithCertificateDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,13 +13,13 @@ import java.util.Optional;
 
 @RestController
 public class CrewController implements CrewApi {
-    private final List<Crew> lc = new ArrayList<>();
-    private final List<CrewWithCertificate> lcw = new ArrayList<>();
+    private final List<CrewDTO> lc = new ArrayList<>();
+    private final List<CrewWithCertificateDTO> lcw = new ArrayList<>();
 
     @Override
     public ResponseEntity<Void> deleteCrew(Integer volunteerId, Integer eventId) {
-        Optional<Crew> result = lc.stream().findFirst().filter(
-                crew -> crew.getVolunteer().getId().equals(volunteerId) && crew.getEventId().equals(eventId)
+        Optional<CrewDTO> result = lc.stream().findFirst().filter(
+                crewDTO -> crewDTO.getVolunteer().getId().equals(volunteerId) && crewDTO.getEventId().equals(eventId)
         );
 
         if (result.isPresent()) {
@@ -31,24 +31,24 @@ public class CrewController implements CrewApi {
     }
 
     @Override
-    public ResponseEntity<List<Crew>> getAllCrews() {
+    public ResponseEntity<List<CrewDTO>> getAllCrews() {
         return ResponseEntity.of(Optional.of(lc));
     }
 
     @Override
-    public ResponseEntity<List<Crew>> getAllCrewsByEventId(Integer eventId) {
-        return ResponseEntity.of(Optional.of(lc.stream().filter(crew -> crew.getEventId().equals(eventId)).toList()));
+    public ResponseEntity<List<CrewDTO>> getAllCrewsByEventId(Integer eventId) {
+        return ResponseEntity.of(Optional.of(lc.stream().filter(crewDTO -> crewDTO.getEventId().equals(eventId)).toList()));
     }
 
     @Override
-    public ResponseEntity<List<Crew>> getAllCrewsByVolunteerId(Integer volunteerId) {
+    public ResponseEntity<List<CrewDTO>> getAllCrewsByVolunteerId(Integer volunteerId) {
         return ResponseEntity.of(Optional.of(lc.stream().filter(
-                crew -> crew.getVolunteer().getId().equals(volunteerId)).toList())
+                crewDTO -> crewDTO.getVolunteer().getId().equals(volunteerId)).toList())
         );
     }
 
     @Override
-    public ResponseEntity<CrewWithCertificate> getCrewCertificate(Integer volunteerId, Integer eventId) {
+    public ResponseEntity<CrewWithCertificateDTO> getCrewCertificate(Integer volunteerId, Integer eventId) {
         return ResponseEntity.of(Optional.of(lcw.stream().findFirst().filter(
                 crew -> crew.getVolunteer().getId().equals(volunteerId) && crew.getEventId().equals(eventId))).get()
         );
@@ -57,12 +57,12 @@ public class CrewController implements CrewApi {
 
     @Override
     public ResponseEntity<Void> joinEventCrew(Integer volunteerId, Integer eventId) {
-        Crew crew = new Crew();
-        CrewWithCertificate crewWithCertificate = new CrewWithCertificate();
-        crew.setEventId(Long.valueOf(eventId));
-        crewWithCertificate.setEventId(Long.valueOf(eventId));
-//        crew.setVolunteer(volunteerId);
-//        crewWithCertificate.setVolunteer(volunteerId);
+        CrewDTO crewDTO = new CrewDTO();
+        CrewWithCertificateDTO crewWithCertificateDTO = new CrewWithCertificateDTO();
+        crewDTO.setEventId(Long.valueOf(eventId));
+        crewWithCertificateDTO.setEventId(Long.valueOf(eventId));
+//        crewDTO.setVolunteer(volunteerId);
+//        crewWithCertificateDTO.setVolunteer(volunteerId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

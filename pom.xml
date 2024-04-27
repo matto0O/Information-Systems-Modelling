@@ -66,6 +66,13 @@
             <version>0.2.2</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- DataBase -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,6 +84,7 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
+
 
     </dependencies>
 
