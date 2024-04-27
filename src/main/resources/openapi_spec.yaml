@@ -252,6 +252,20 @@ paths:
 #        '500':
 #          description: Internal server error
   /user:
+    get:
+      tags:
+        - user
+      summary: Get all users
+      operationId: getUsers
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
     post:
       tags:
         - user
@@ -283,7 +297,7 @@ paths:
           description: name that need to be deleted
           required: true
           schema:
-            type: string
+            type: integer
       requestBody:
         description: Update an existent user in the store
         content:
