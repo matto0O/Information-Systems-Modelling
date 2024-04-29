@@ -45,13 +45,13 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateUser(String id, UserDTO userDTO) {
+    public ResponseEntity<Void> updateUser(Integer id, UserDTO userDTO) {
         User user = new User();
         user.setId(Long.valueOf(id));
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setPhoneNumber(userDTO.getPhoneNumber());
-        userService.updateUser(Long.parseLong(id), user);
+        userService.updateUser(id, user);
 
         return new ResponseEntity<>(org.springframework.http.HttpStatus.OK);
     }
