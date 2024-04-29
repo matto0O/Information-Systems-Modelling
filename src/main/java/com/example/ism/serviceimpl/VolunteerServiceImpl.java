@@ -51,6 +51,7 @@ public class VolunteerServiceImpl implements VolunteerService {
             return volunteerRepository.save(existingVolunteer);
         }
         volunteer.setId(id);
+
         return volunteerRepository.save(volunteer);
     }
 

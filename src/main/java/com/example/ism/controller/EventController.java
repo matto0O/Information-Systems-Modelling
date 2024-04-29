@@ -57,23 +57,12 @@ public class EventController implements EventApi {
 
     @Override
     public ResponseEntity<List<EventDTO>> findEventsByEventTags(List<Integer> tags) {
-        return ResponseEntity.of(Optional.of(le.stream().filter(
-                eventDTO -> {
-                    for (EventTagDTO tag : eventDTO.getEventTags()) {
-                        if (tags.contains(Math.toIntExact(tag.getId()))) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-        ).toList()));
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
     public ResponseEntity<List<EventDTO>> findInTimeframe(OffsetDateTime before, OffsetDateTime after) {
-        return ResponseEntity.of(Optional.of(le.stream().filter(
-                eventDTO -> eventDTO.getDate().isAfter(before) && eventDTO.getDate().isBefore(after)
-        ).toList()));
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
@@ -82,37 +71,4 @@ public class EventController implements EventApi {
                 eventDTO -> eventDTO.getId().equals(eventId)
         )).get());
     }
-
-//    @Override
-//    public ResponseEntity<EventWithoutTagsDTO> updateEvent(EventWithoutTagsDTO eventWithoutTagsDTO) {
-//        Optional<EventWithoutTagsDTO> result = lewt.stream().findFirst().filter(
-//                event -> event.getId().equals(eventWithoutTagsDTO.getId())
-//        );
-//
-//        if (result.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//
-//
-//        Optional<EventDTO> resultE = le.stream().findFirst().filter(
-//                eventDTO -> eventDTO.getId().equals(eventWithoutTagsDTO.getId())
-//        );
-//
-//        if (resultE.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//
-//        EventWithoutTagsDTO obj = result.get();
-//        EventDTO objE = resultE.get();
-//
-//        obj.setDate(eventWithoutTagsDTO.getDate());
-//        objE.setDate(eventWithoutTagsDTO.getDate());
-//        obj.setMapPath(eventWithoutTagsDTO.getMapPath());
-//        objE.setMapPath(eventWithoutTagsDTO.getMapPath());
-//        obj.setName(eventWithoutTagsDTO.getName());
-//        objE.setName(eventWithoutTagsDTO.getName());
-//
-//        return ResponseEntity.of(Optional.of(obj));
-//    }
-
-//    @Override
-//    public ResponseEntity<ModelApiResponse> uploadFile(Long eventId, MultipartFile body) {
-//        return EventApi.super.uploadFile(eventId, body);
-//    }
 }
