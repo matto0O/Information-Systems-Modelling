@@ -30,7 +30,6 @@ public class EventServiceImpl implements EventService {
         if (e.isPresent()) {
             Event existingEvent = e.get();
             existingEvent.setName(event.getName());
-            existingEvent.setDescription(event.getDescription());
             existingEvent.setDate(event.getDate());
             existingEvent.setTags(event.getTags());
             existingEvent.setOrganizer(event.getOrganizer());

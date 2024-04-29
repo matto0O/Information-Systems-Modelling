@@ -23,8 +23,6 @@ public class Event {
 
     private String name;
 
-    private String description;
-
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate date;
 

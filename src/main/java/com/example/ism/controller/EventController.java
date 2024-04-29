@@ -1,58 +1,75 @@
 package com.example.ism.controller;
 
 import com.example.api.EventApi;
+import com.example.ism.model.Event;
+import com.example.ism.model.EventTag;
+import com.example.ism.service.EventService;
+import com.example.ism.service.OrganizerService;
 import com.example.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class EventController implements EventApi {
-    private static long id = 0;
-    private final List<EventDTO> le = new ArrayList<>();
-    private final List<EventWithoutTagsDTO> lewt = new ArrayList<>();
+
+    @Autowired
+    EventService eventService;
+
+    @Autowired
+    OrganizerService organizerService;
 
     @Override
     public ResponseEntity<EventDTO> addEvent(EventDTO eventDTO) {
-        eventDTO.setId(++id);
-        le.add(eventDTO);
-        EventWithoutTagsDTO eventWithoutTagsDTO = new EventWithoutTagsDTO();
-        eventWithoutTagsDTO.setId(eventDTO.getId());
-        lewt.add(eventWithoutTagsDTO);
-        return ResponseEntity.of(Optional.of(eventDTO));
+        Event event = new Event();
+        event.setId(eventDTO.getId());
+        event.setName(eventDTO.getName());
+        event.setDate(eventDTO.getDate().toLocalDate());
+        Set<EventTag> tags = new HashSet<>();
+        for (EventTagDTO tag : eventDTO.getEventTags()) {
+            tags.add(new EventTag(tag.getId(), tag.getName()));
+        }
+        event.setTags(tags);
+        event.setMapPath(eventDTO.getMapPath());
+        event.setOrganizer(organizerService.findOrganizerById(eventDTO.getOrganizerId()));
+
+        eventService.addEvent(event);
+        return new ResponseEntity<>(eventDTO, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Void> deleteEvent(Long eventId) {
-        Optional<EventDTO> result = le.stream().findFirst().filter(
-                eventDTO -> eventDTO.getId().equals(eventId)
-        );
-
-        if (result.isPresent()) {
-            EventDTO obj = result.get();
-            le.remove(obj);
-            Optional<EventWithoutTagsDTO> resultWithoutTags = lewt.stream().findFirst().filter(
-                    event -> event.getId().equals(eventId)
-            );
-            if (resultWithoutTags.isPresent()) {
-                EventWithoutTagsDTO objwt = resultWithoutTags.get();
-                lewt.remove(objwt);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(eventService.detailedEvent(eventId) == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        eventService.deleteEventById(eventId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<EventDTO>> findAllEvents() {
-        return ResponseEntity.of(Optional.of(le));
+        List<EventDTO> eventDTOs = new ArrayList<>();
+        for (Event event : eventService.findAllEvents()) {
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setDate(OffsetDateTime.from(event.getDate()));
+            List<EventTagDTO> tags = new ArrayList<>();
+            for (EventTag tag : event.getTags()) {
+                EventTagDTO tagDTO = new EventTagDTO();
+                tagDTO.setId(tag.getId());
+                tagDTO.setName(tag.getName());
+                tags.add(tagDTO);
+            }
+            eventDTO.setEventTags(tags);
+            eventDTO.setMapPath(event.getMapPath());
+            eventDTO.setOrganizerId(event.getOrganizer().getId());
+            eventDTOs.add(eventDTO);
+        }
+        return new ResponseEntity<>(eventDTOs, HttpStatus.OK);
     }
 
     @Override
@@ -67,8 +84,23 @@ public class EventController implements EventApi {
 
     @Override
     public ResponseEntity<EventDTO> getEventById(Long eventId) {
-        return ResponseEntity.of(Optional.of(le.stream().findFirst().filter(
-                eventDTO -> eventDTO.getId().equals(eventId)
-        )).get());
+        Event event = eventService.detailedEvent(eventId);
+        if(event == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        EventDTO eventDTO = new EventDTO();
+        eventDTO.setId(event.getId());
+        eventDTO.setName(event.getName());
+        eventDTO.setDate(OffsetDateTime.from(event.getDate()));
+        List<EventTagDTO> tags = new ArrayList<>();
+        for (EventTag tag : event.getTags()) {
+            EventTagDTO tagDTO = new EventTagDTO();
+            tagDTO.setId(tag.getId());
+            tagDTO.setName(tag.getName());
+            tags.add(tagDTO);
+        }
+        eventDTO.setEventTags(tags);
+        eventDTO.setMapPath(event.getMapPath());
+        eventDTO.setOrganizerId(event.getOrganizer().getId());
+        return new ResponseEntity<>(eventDTO, HttpStatus.OK);
     }
 }
