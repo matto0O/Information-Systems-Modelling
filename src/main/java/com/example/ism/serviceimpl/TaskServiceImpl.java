@@ -1,5 +1,6 @@
 package com.example.ism.serviceimpl;
 
+import com.example.ism.aspects.Log;
 import com.example.ism.model.Task;
 import com.example.ism.repository.TaskRepository;
 import com.example.ism.service.TaskService;
@@ -17,11 +18,13 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Log
     @Override
     public Task addTask(Task task) {
         return taskRepository.save(task);
     }
 
+    @Log
     @Override
     public Task deleteTaskById(long id) {
         Optional<Task> e = taskRepository.findById(id);
@@ -38,6 +41,7 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAll();
     }
 
+    @Log
     @Override
     public Task updateTask(long id, Task task) {
         Optional<Task> e = taskRepository.findById(id);
@@ -57,6 +61,7 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.save(task);
     }
 
+    @Log
     @Override
     public Task findTaskById(long id) {
         return taskRepository.findById(id).orElse(null);

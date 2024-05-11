@@ -1,5 +1,6 @@
 package com.example.ism.serviceimpl;
 
+import com.example.ism.aspects.Log;
 import com.example.ism.model.Skill;
 import com.example.ism.repository.SkillRepository;
 import com.example.ism.service.SkillService;
@@ -17,11 +18,13 @@ public class SkillServiceImpl implements SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
+    @Log
     @Override
     public Skill addSkill(Skill skill) {
         return skillRepository.save(skill);
     }
 
+    @Log
     @Override
     public Skill deleteSkillById(long id) {
         Optional<Skill> c = skillRepository.findById(id);

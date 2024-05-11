@@ -1,5 +1,6 @@
 package com.example.ism.serviceimpl;
 
+import com.example.ism.aspects.Log;
 import com.example.ism.model.Event;
 import com.example.ism.model.EventTag;
 import com.example.ism.repository.EventRepository;
@@ -24,6 +25,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
+    @Log
     @Override
     public Event updateEvent(long id, Event event) {
         Optional<Event> e = eventRepository.findById(id);
@@ -40,6 +42,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
+    @Log
     @Override
     public Event deleteEventById(long id) {
         Optional<Event> e = eventRepository.findById(id);
@@ -51,6 +54,7 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
+    @Log
     @Override
     public Event detailedEvent(long id) {
         return eventRepository.getReferenceById(id);
@@ -67,6 +71,7 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
+    @Log
     @Override
     public List<Event> findEventsByTags(List<EventTag> tags) {
         return eventRepository.findAllByTags(tags);
