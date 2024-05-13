@@ -60,8 +60,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean loginUser(String email, String password) {
-        return false;
+    public User loginUser(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password);
     }
 
     @Override

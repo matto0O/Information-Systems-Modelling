@@ -12,6 +12,6 @@ public interface UserService {
     //@Cacheable ("users")
     public User findUserById(long id);
 
-    public boolean loginUser(String email, String password);
+    public User loginUser(String email, String password);
     public boolean logoutUser();
 }
