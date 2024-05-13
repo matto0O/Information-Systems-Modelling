@@ -3,15 +3,19 @@ package com.example.ism.controller;
 import com.example.api.UserApi;
 import com.example.ism.model.User;
 import com.example.ism.service.UserService;
+import com.example.model.LoginUserRequest;
 import com.example.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController implements UserApi {
 
     @Autowired
@@ -56,13 +60,22 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<String> loginUser(String email, String password) {
-        return UserApi.super.loginUser(email, password);
+    public ResponseEntity<UserDTO> loginUser(LoginUserRequest loginUserRequest) {
+        User user = userService.loginUser(loginUserRequest.getEmail(), loginUserRequest.getPassword());
+        if (user == null) {
+            return new ResponseEntity<>(org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
+        return new ResponseEntity<>(userDTO, org.springframework.http.HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> logoutUser() {
-        return UserApi.super.logoutUser();
+    public ResponseEntity<Boolean> logoutUser() {
+        return new ResponseEntity<>(org.springframework.http.HttpStatus.OK);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.ism.serviceimpl;
 
+import com.example.ism.aspects.ArgsLog;
 import com.example.ism.model.User;
 import com.example.ism.repository.UserRepository;
 import com.example.ism.service.UserService;
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @ArgsLog
     @Override
     public User addUser(User user) {
         return userRepository.save(user);
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
+    @ArgsLog
     @Override
     public User updateUser(long id, User user) {
         Optional<User> u = userRepository.findById(id);
@@ -59,6 +62,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    @ArgsLog
     @Override
     public User loginUser(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
